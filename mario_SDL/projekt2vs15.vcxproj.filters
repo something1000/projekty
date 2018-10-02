@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mariogame.cpp" />
+    <ClCompile Include="mariohero.cpp" />
+    <ClCompile Include="pomocnicze.cpp" />
+    <ClCompile Include="mariolevel.cpp" />
+    <ClCompile Include="mariomonster.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="cs8x8.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="eti.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="floor.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="mario_r.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="breakable_block.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{ddcaa265-ec10-40b1-bb64-cf027bdf6185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{516e7127-d2e6-4495-b07e-c1afea21f156}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mariogame.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mariohero.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pomocnicze.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_inc.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mariolevel.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mariomonster.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="allhead.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

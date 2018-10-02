@@ -1,0 +1,34 @@
+﻿  mariohero.cpp
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(43): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'const char *(__cdecl *)(void)'
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(111): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(115): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(120): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(283): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(310): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(319): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(324): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\gawrych\desktop\studia\mario\mariohero.cpp(277): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  projekt2vs15.vcxproj -> C:\Users\Gawrych\Desktop\studia\mario\Debug\projekt2vs15.exe
+  projekt2vs15.vcxproj -> C:\Users\Gawrych\Desktop\studia\mario\Debug\projekt2vs15.pdb (Full PDB)
+  C:\Users\Gawrych\Desktop\studia\mario\sdl\winlib15\concrt140.dll
+  C:\Users\Gawrych\Desktop\studia\mario\sdl\winlib15\SDL2.dll
+  C:\Users\Gawrych\Desktop\studia\mario\sdl\winlib15\vccorlib140.dll
+  C:\Users\Gawrych\Desktop\studia\mario\sdl\winlib15\vcruntime140.dll
+          4 file(s) copied.
+  C:\Users\Gawrych\Desktop\studia\mario\breakable_block.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\castle.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\coin.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\cs8x8.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\eti.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\floor.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\mario_l.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\mario_l2.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\mario_r.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\mario_r2.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\mario_up.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\monster.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\monster_l.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\monster_r.bmp
+  C:\Users\Gawrych\Desktop\studia\mario\solid.bmp
+         15 file(s) copied.

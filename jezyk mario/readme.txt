@@ -1,0 +1,1 @@
+Interpreter języka skryptowego ze zmiennymi, pętlami (@), instrukcjami warunkowymi(?) i operacjami logicznymi.

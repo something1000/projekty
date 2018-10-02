@@ -1,0 +1,12 @@
+6573
+suma
+n=100 suma=i=0
+@(i<n) {
+	?(i%2==0 | i%3==0) {
+		suma = suma - i*i
+	}
+	?(!(i%2==0 | i%3==0)) {
+		suma = suma + i*i
+	}
+	i=i+1
+}

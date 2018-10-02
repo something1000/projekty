@@ -1,0 +1,686 @@
+﻿body
+{
+    margin:0 auto;
+    max-width:1400px;
+    min-width:360px;
+    background-color:#000;
+    font-size:13px;
+}
+
+a{
+    color:#fff;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+a:hover{
+    color:#a8a8a8;
+}
+#kontener{
+    margin: 0 auto;
+}
+
+.svgIMG{
+    transform:scale(0.5);
+	margin:0 auto;
+    animation: pilka;
+    animation-duration:3s;
+    animation-iteration-count:infinite;
+    animation-timing-function:cubic-bezier(1,1,1,1);
+
+}
+
+.svgContainer{
+	float:left;
+	background:#fff;
+    width:100%;
+}
+
+#gallery{
+    width:100%;
+}
+
+.g_image_contener{
+    float:left;
+    padding:2.5%;
+
+}
+
+.g_title{
+    color:#fff;
+    font-weight:bold;
+    font-size:1.3em;
+    text-align:center;
+    border-top:2px #fff solid;
+}
+@keyframes pilka{
+    0% {
+        transform:skewX(10deg);
+         animation-timing-function:ease-in;
+         
+    }
+    25%{
+        transform:skewX(20deg);
+        padding-left:50%;
+     
+    }
+    50%{
+         transform:skewX(30deg);
+         padding-left:80%;
+         animation-timing-function:ease-in;
+       
+    }
+
+    75%{
+  
+         transform:skewX(-20deg);
+         padding-left:50%;
+         
+    
+    }
+     100%{
+         transform:skewX(0);
+         padding-left:0%;
+         
+    }
+}
+#top {
+    
+    width:100%;
+    float:left;
+    background-color:#ff0000;
+    background:url('../img/header.png') no-repeat;
+    background-position:right ;
+    background-size:cover;
+
+}
+#header{
+    width:100%;
+    height:300px;
+    float:left;
+}
+
+#noJS{
+    background:#ff0000;
+    float:left;
+    position:absolute;
+}
+#logoplace {
+    margin-top:7%;
+    float:left;
+    width:120%;
+    background:url(../img/logobg.png) no-repeat;
+    background-size:100% 100%;
+}
+
+img.cfc {
+    padding:10px;
+    width:25%;
+    float:left;
+
+}
+
+.logotxt{
+    font-variant:small-caps;
+    font-size:xx-large;
+    font-style:italic;
+    font-weight:bold;
+    font-family:'Verdana Pro';
+    color:#fff;
+    position:relative;
+    display:inline-block;
+    margin-top:8%;
+}
+.desctxt{
+    font-variant:small-caps;
+    font-size:large;
+    font-style:italic;
+    font-weight:bold;
+    font-family:'Verdana Pro';
+    color:#fff;
+    white-space:nowrap;
+    display:inline-block;
+    position:relative;
+    margin-top:-10px;
+}
+.projtxt{
+    font-variant:small-caps;
+    font-size:medium;
+    white-space:nowrap;
+    font-family:'Verdana Pro';
+    position:relative;
+    display:inline;
+    color:#fff;
+}
+
+
+#left-head {
+
+    width:50%;
+    float:left;
+    
+} 
+#right {
+    float:left;
+    width:50%;
+}
+#menu {
+    margin-top:0px;
+    width:100%;
+    background-image:url(../img/menubg.jpg) ;
+    background-repeat:repeat-x;
+    background-size:contain;
+    background-color:#808080;
+    float:left;
+    height:69px;
+    text-align:center;
+    border-bottom:3px solid #fff;
+    
+}
+
+.menu-el a {
+    text-decoration:none;
+    color:#fff;
+}
+
+ol.menu-items{
+    margin-left:-50px;
+    font-size:1.1em;
+    text-align:center;
+    font-variant:small-caps;
+    display:inline-block;
+    list-style:none;
+    height:2em;
+    
+}
+
+li.menu-el{
+    font-size:2em;
+    font-weight:bold;
+    color:#fff;
+    float:left;
+    text-align:center;
+    margin:1px;
+    display:inline;
+    border-left:1px #fff solid;
+    width:120px;
+    height:1em;
+    line-height:1em;
+
+}
+li.menu-el:first-child{
+    border-left:0;
+}
+ol >li >ul {
+    list-style:none;
+
+    display:none;
+    padding: 0;
+    margin:0;
+     z-index:4;
+}
+
+ol>li:hover {
+
+    text-decoration:underline;
+
+}
+ol>li:hover > ul {
+
+    display:block;
+
+
+}
+ol > li > ul>  li{
+     z-index:4;
+    width:100%;
+    padding:0px;
+    float:left;
+    position:relative;
+    text-align:center;
+    border: 1px #fff solid;
+    background:rgba(128, 128, 128,0.7);
+    font-size:0.8em;
+    
+}
+ol > li > ul > li:hover{
+        background:#fff;
+        color:#222a66;
+}
+ol > li > ul > li:hover a{
+        background:#fff;
+        color:#222a66;
+        
+    }
+
+#left-side{
+    width:70%;
+    float:left;
+    background-color:#222a66;
+    padding-bottom: 2000px; margin-bottom: -2000px; 
+}
+
+#midd{
+    overflow:hidden;
+    float:left;
+}
+#right-side {
+
+    width:30%;
+    background-color:#222a66;
+    float:right;
+    padding-bottom: 2000px; margin-bottom: -2000px; 
+ 
+}
+.timer {
+    color:#fff;
+    text-align:center;
+    font-weight:bold;
+}
+#nextMatch {
+    
+    margin:2.5%;
+    margin-top: 5.7%;
+    border: 2px #fff solid;
+    background:url(../img/artbg.jpg);
+    background-size:contain;
+    float:right;
+
+}
+
+.imgTeams{
+    width:40%;
+}
+
+.nextTitle span{
+    padding-left:15px;
+    display:inline-block;
+    padding-top:1%;
+}
+.nextTitle{
+   
+    width:100%;
+    float:left;
+    font-variant:small-caps;
+    font-family:'Verdana Pro';
+    font-weight:bold;
+    font-size:1.3em;
+    text-align:left;
+    border-bottom: 1px #fff solid;
+    height:30px;
+
+
+}
+img.home {
+    float:right;
+    width:100%;
+    margin-right:-30%;
+}
+img.away {
+    float:left;
+    margin-left:-30%;
+    width:100%;
+}
+img.vs {
+    
+width:100%;
+}
+.nextTeams{
+    float:left;
+    background-color:#fff;
+    width:100%;
+}
+
+div#nextMatch a{
+
+    text-decoration:none;
+    color:#fff;
+    background-size:contain;
+    font-variant:small-caps;
+    padding:1%;
+}
+.relacja {
+        float:right;
+            text-align:right;
+}
+.switchmatch{
+    float:left;
+    display:inline-block;
+    color:#fff;
+    font-variant:small-caps;
+    padding:1%;
+      cursor:pointer;
+}
+.switchmatch:hover{
+  
+}
+#teamTable {
+    width:94%;
+    margin:2.5%;
+    margin-top: 5.7%;
+    border: 2px #fff solid;
+    background:url(../img/artbg.jpg);
+    background-size:contain;
+    float:right;
+}
+/**
+.mtxtup:hover{
+    color:red;
+    display:inline-block;
+    padding-top:5px;
+}
+**/
+.punktacja{
+    width:100%;
+    color:#fff;
+    text-align:center;
+        border-collapse:collapse;
+}
+
+table.punktacja td{
+         background:url(../img/artbg.jpg);
+     background-size:contain;
+    border:1px #fff solid;
+}
+
+.tabeladr{
+    width:40%;
+}
+.tabelalp{
+    width:10%;
+}
+#footer{
+    width:100%;
+    background:url('../img/footbg.jpg');
+    background-size:contain;
+    float:left;
+
+}
+
+.footpartl{
+    width:50%;
+    float:left;
+    color:#fff;
+}
+.footpartr{
+    color:#fff;
+    width:50%;
+    float:right;
+}
+.foottitle{
+    color:#fff;
+    font-variant:small-caps;
+    border-bottom:2px #fff solid;
+    width:100%;
+}
+
+.article{
+    border:2px #fff solid;
+    width:95%;
+    margin:2.5%;
+    background:url('../img/artbg.jpg');
+    text-align:center;
+    float:left;
+
+}
+.artphoto{
+    background:#fff;
+    width:20%;
+
+    float:left;
+    overflow:hidden;
+}
+.artphoto >img{
+    overflow:hidden;
+    width:90%;
+    height:auto;
+    padding:5px;
+    background:#fff;
+    background-size:cover;
+}
+.arttitle{
+    width:100%;
+    float:left;
+    font-variant:small-caps;
+    font-family:'Verdana Pro';
+    font-weight:bold;
+    font-size:1.3em;
+    text-align:left;
+    border-bottom: 1px #fff solid;
+    height:30px;
+}
+.arttitle p{
+    margin-top:0.5%;
+    padding-left:15px;
+}
+.articletext{
+    width:80%;
+    float:left;
+}
+.artdesc{
+    width:96%;
+    float:left;
+    font-family:'Verdana Pro';
+    font-size:1.1em;
+    text-align:left;
+    padding:15px;
+    display:block;
+    color:#fff;
+    position:relative;
+}
+
+.readmore{
+    float:right;
+    font-weight:bold;
+    text-decoration:underline;
+    display:inline-block;
+    
+
+}
+.norfield{
+    border:2px #fff solid;
+    width:95%;
+    margin:2.5%;
+    background:url('../img/artbg.jpg');
+    background-size:contain;
+    text-align:center;
+    float:left;
+
+}
+.norfieldtext{
+    width:100%;
+    float:left;
+}
+.norfieldtitle{
+    width:100%;
+    float:left;
+    font-variant:small-caps;
+    font-family:'Verdana Pro';
+    font-weight:bold;
+    font-size:1.3em;
+    text-align:left;
+    border-bottom: 1px #fff solid;
+    height:30px;
+}
+.norfieldtitle p{
+    margin-top:0.5%;
+    padding-left:15px;
+}
+.norfieldcnt{
+    text-align: justify;
+    width:96%;
+    float:left;
+    font-family:'Verdana Pro';
+    font-size:1.1em;
+    padding:2%;
+    
+    display:block;
+    color:#fff;
+}
+
+
+.hisimage{
+ width:50%;
+ background-color:#222a66;
+ float:right;
+ height:auto;
+ padding:5px;
+ border:2px #181d42 solid;
+}
+
+@media screen and (max-width: 720px) {
+    body{
+        font-size:10px;
+    }
+    li.menu-el {
+        width:50px;
+        font-size:1em;
+    }
+    #menu{
+        height:50px;
+    }
+    #left-side{
+        width:100%;
+    }
+    #right-side{
+        width:100%;
+    }
+    .arttitle{
+        padding-top:6px;
+    }
+    #top{
+        background-position:60%;
+    }
+    .projtxt{
+        visibility:hidden;
+    }
+    .desctxt{
+        font-size:x-small;
+    }
+    .logotxt{
+        margin-top:15%;
+        font-size:medium;
+    }
+    img.cfc{
+        margin-top:5%;
+    }
+    #logoplace{
+        margin-top:30%;
+    }
+}
+
+@keyframes firstsddd {
+    0%{
+        color:#fff;
+        margin-left:0px;
+    }
+    50%{ 
+        color:#ff0000;
+        margin-left:100px;
+    }
+    99%{
+        color:#fff;
+        margin-left:0px;
+    }
+}
+
+#slider_switch {
+    
+    background: rgba(34,42,102,0.7);
+    float:right;
+    color:#a8a8a8;
+    cursor:pointer;
+    z-index: 100;
+    position: relative;
+    text-align:center;
+}
+
+
+#slider{
+    width:100%;
+    float:left;
+    background-color:#222a66;
+    display:none;
+}
+
+       /* jssor slider bullet navigator skin 01 css */
+        /*
+        .jssorb01 div           (normal)
+        .jssorb01 div:hover     (normal mouseover)
+        .jssorb01 .av           (active)
+        .jssorb01 .av:hover     (active mouseover)
+        .jssorb01 .dn           (mousedown)
+        */
+        .jssorb01 {
+            position: absolute;
+        }
+        .jssorb01 div, .jssorb01 div:hover, .jssorb01 .av {
+            position: absolute;
+            /* size of bullet elment */
+            width: 12px;
+            height: 12px;
+            filter: alpha(opacity=70);
+            opacity: .7;
+            overflow: hidden;
+            cursor: pointer;
+            border: #000 1px solid;
+        }
+        .jssorb01 div { background-color: gray; }
+        .jssorb01 div:hover, .jssorb01 .av:hover { background-color: #d3d3d3; }
+        .jssorb01 .av { background-color: #fff; }
+        .jssorb01 .dn, .jssorb01 .dn:hover { background-color: #555555; }
+        
+        /* jssor slider arrow navigator skin 05 css */
+        /*
+        .jssora05l                  (normal)
+        .jssora05r                  (normal)
+        .jssora05l:hover            (normal mouseover)
+        .jssora05r:hover            (normal mouseover)
+        .jssora05l.jssora05ldn      (mousedown)
+        .jssora05r.jssora05rdn      (mousedown)
+        .jssora05l.jssora05lds      (disabled)
+        .jssora05r.jssora05rds      (disabled)
+        */
+        .jssora05l, .jssora05r {
+            display: block;
+            position: absolute;
+            /* size of arrow element */
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            background: url('../imga17.png') no-repeat;
+            overflow: hidden;
+        }
+        .jssora05l { background-position: -10px -40px; }
+        .jssora05r { background-position: -70px -40px; }
+        .jssora05l:hover { background-position: -130px -40px; }
+        .jssora05r:hover { background-position: -190px -40px; }
+        .jssora05l.jssora05ldn { background-position: -250px -40px; }
+        .jssora05r.jssora05rdn { background-position: -310px -40px; }
+        .jssora05l.jssora05lds { background-position: -10px -40px; opacity: .3;  }
+        .jssora05r.jssora05rds { background-position: -70px -40px; opacity: .3; }
+        
+        /* jssor slider thumbnail navigator skin 09 css */
+        
+        .jssort09-600-45 .p {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 600px;
+            height: 45px;
+        }
+        
+        .jssort09-600-45 .t {
+            font-family: verdana;
+            font-weight: normal;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            color:#fff;
+            line-height: 45px;
+            font-size: 20px;
+            padding-left: 10px;
+        }
+        

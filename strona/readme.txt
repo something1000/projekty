@@ -1,0 +1,1 @@
+Strona internetowa z możliwością logowania oraz galerią zdjęć.

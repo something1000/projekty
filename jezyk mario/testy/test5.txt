@@ -1,0 +1,8 @@
+2738
+a A tyty
+a=23
+tyty=0
+@(tyty) {
+	tyty = 101/a
+	a = a-1
+}
