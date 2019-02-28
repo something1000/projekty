@@ -26,7 +26,19 @@ public:
 	int getNumOfKeys();
 	int getOvNumOfKeys();
 	bool is_ok = true;
+	void reorganize();
+	bool update(Polynomial p);
+	void resetNext();
+	bool setLog();
+	void showFile();
+	int readed = 0;
+	int saved = 0;
+	void readAllRecords();
+	int maxSaved = 0;
+	int maxReaded = 0;
 private:
+	bool log = true;
+
 	int currentPage = -1;
 	int overflowPageInMemory =-1;
 	int overflowPages = 1;
@@ -35,7 +47,7 @@ private:
 		int page = 1;
 		Polynomial record;
 	} lastRecord;
-		void resetLastRecord();
+	
 
 		void savePage(std::fstream *stream, int address, Polynomial * buffor);
 
@@ -68,6 +80,7 @@ private:
 		void putKey(int key);
 		int getKeyPosition(int key);
 
+		void saveConfig();
 	int readPage(int address);
 
 	int readOverflowPage(int address);
@@ -76,8 +89,8 @@ private:
 	int overflowLastAddress = 0;
 		bool addToOverflow(Polynomial p, int mainAreaAddress);
 
+		void printLog();
 
-		void reorganize();
 
 	const char zeros[500] = { 0 };
 	const char deleted = 1;

@@ -11,7 +11,7 @@ Polynomial::Polynomial(const int a0, const int a1, const int a2, const int a3, c
 	a[2] = a2;
 	a[3] = a3;
 	a[4] = a4;
-	val = value();
+	val = a[0] + a[1] * x + a[2] * x*x + a[3] * x*x*x + a[4] * x*x*x*x;
 }
 
 Polynomial::~Polynomial()
@@ -20,7 +20,8 @@ Polynomial::~Polynomial()
 
 int Polynomial::value()
 {
-	return a[0] + a[1] * x + a[2] * x*x + a[3] * x*x*x + a[4] * x*x*x*x;
+	return val;
+	//a[0] + a[1] * x + a[2] * x*x + a[3] * x*x*x + a[4] * x*x*x*x;
 	//return x;
 }
 
@@ -65,5 +66,5 @@ void Polynomial::set(int a0, int a1, int a2, int a3, int a4, int x) {
 	a[3] = a3;
 	a[4] = a4;
 	this->x = x;
-	val = value();
+	val = a[0] + a[1] * x + a[2] * x*x + a[3] * x*x*x + a[4] * x*x*x*x;
 }

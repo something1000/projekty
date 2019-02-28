@@ -32,6 +32,7 @@ bool Disk::loadSettings() {
 	conf.read((char*)&mainKeys, 4);//-1
 	conf.read((char*)&mainAreaPages, 4);
 	conf.read((char*)&overflowKeys, 4);
+	conf.read((char*)&overflowPages, 4);
 	conf.read((char*)&overflowLastAddress, 4);
 	conf.read((char*)&indexPages, 4);
 	conf.read((char*)&indexKeys, 4);
@@ -47,14 +48,18 @@ bool Disk::loadIndexes() {
 		return false;
 	}
 	int trash = 0, k=0;
-	index = new Index[indexKeys];
+	index = new Index[indexPages*BLOCIKNG_INDEX];
+	memset(index, 0, sizeof(Index)*indexPages*BLOCIKNG_INDEX);
 	for (int i = 0; i < indexPages; i++) {
 		for (int j = 0; j < BLOCIKNG_INDEX; j++) {
+
 			indexFile.read((char*)&index[k].address, 4);
 			indexFile.read((char*)&index[k++].key, 4);
 			indexFile.read((char*)&trash, 2);
 		}
+		readed++;
 	}
+	printLog();
 	indexFile.close();
 	return true;
 }
@@ -63,18 +68,22 @@ void Disk::saveIndexes() {
 	indexFile.open("index.brt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
 
 	int trash = 0, k = 0;
-	for (int i = 0; i < indexKeys; i++) {
-			indexFile.write((char*)&index[i].address, 4);
-			indexFile.write((char*)&index[i].key, 4);
+	for (int j = 0; j < ceil(1.0*indexKeys / (1.0*BLOCIKNG_INDEX)); j++) {
+		for (int i = 0; i < BLOCIKNG_INDEX; i++) {
+			indexFile.write((char*)&index[k].address, 4);
+			indexFile.write((char*)&index[k++].key, 4);
 			indexFile.write((char*)&trash, 2);
+		}
+		saved++;
 	}
-	for (int i = 0; i < BLOCIKNG_INDEX - indexKeys%BLOCIKNG_INDEX; i++) {
-		indexFile.write((char*)&zeros, 4);
-		indexFile.write((char*)&zeros, 4);
-		indexFile.write((char*)&zeros, 2);
-	}
+	//for (int i = 0; i < BLOCIKNG_INDEX - indexKeys%BLOCIKNG_INDEX; i++) {
+	//	indexFile.write((char*)&zeros, 4);
+	//	indexFile.write((char*)&zeros, 4);
+	//	indexFile.write((char*)&zeros, 2);
+	//}
 	std::flush(indexFile);
 	indexFile.close();
+	printLog();
 }
 
 void Disk::addGuard() {
@@ -100,7 +109,11 @@ int Disk::getKeyPosition(int key)
 	
 
 	if (indexKeys < 2) return index[0].address;
-
+	//int i;
+	//for (i = 0; i < indexKeys; i++) {
+	//	if (index[i].key > key)break;
+	//}
+	//if (i == indexKeys) return index[i - 1].address;
 	while (left <= right) {
 		middle = (left + right) / 2;
 		if (index[middle].key == key) return index[middle].address;
@@ -113,21 +126,46 @@ int Disk::getKeyPosition(int key)
 	return index[middle].address;
 }
 
+void Disk::printLog() {
+
+	if (log) {
+		
+		std::cout << "## LOG: Odczytow: " << readed << std::endl;
+		std::cout << "## LOG: Zapisow: " << saved << std::endl;
+		readed = 0;
+		saved = 0;
+	}
+}
+
 bool Disk::save(Polynomial p)
 {
 	int address = this->getKeyPosition(p.getKey());
 	int recordsOnPage = this->readPage(address);
 	//mainArea.seekg(writePosition);
-
+	p.setOverflowAddr(0);
 	int x = p.getX();
 	int key = p.getKey();
 	int *a = p.getCoefficient();
 
+	if (p.getKey() < 1) return false;
 
 	if (recordsOnPage < BLOCKING_FACTOR) {
 		int i;
 		for (i = 0; i <recordsOnPage; i++) {
-			if (pageBuffor[i].getKey() == key) return false;
+			if (pageBuffor[i].getKey() == key) {
+				if (pageBuffor[i].deleted == 1) {
+					pageBuffor[i].deleted = 0;
+					savePage(address);
+					mainKeys++;
+					if (i == 0 || (i == 1 && address == 1)) index[address - 1].key = pageBuffor[i].getKey();
+					printLog();
+					return true;
+				}
+				else {
+					printLog();
+					return false;
+				}
+			}
 		}
 
 		for (i = recordsOnPage - 1; i >= 0; i--) {
@@ -138,6 +176,7 @@ bool Disk::save(Polynomial p)
 		if (i + 1 == 0 || (i+1 == 1 && address ==1)) index[address-1].key = pageBuffor[i+1].getKey();
 		savePage(address);
 		mainKeys++;
+		printLog();
 		return true;
 	}
 	else {
@@ -151,7 +190,16 @@ bool Disk::addToOverflow(Polynomial p, int mainAreaAddress) {
 	for (i =0; i < BLOCKING_FACTOR; i++) {
 		if (pageBuffor[i].getKey() >= p.getKey()) break;
 	}
-	if (pageBuffor[i].getKey() == p.getKey()) return false;
+	if (pageBuffor[i].getKey() == p.getKey()) {
+		if (pageBuffor[i].deleted == 1) {
+			pageBuffor[i].deleted = 0;
+			savePage(mainAreaAddress);
+			mainKeys++;
+			if (i == 0 || (i == 1 && mainAreaAddress == 1)) index[mainAreaAddress - 1].key = pageBuffor[i].getKey();
+		}
+		printLog();
+		return false;
+	}
 	i--; //chcê mniejszy od mojego klucza
 
 	if (pageBuffor[i].overflowAddr() == 0) {
@@ -186,7 +234,18 @@ bool Disk::addToOverflow(Polynomial p, int mainAreaAddress) {
 			int prevAddress = 0;
 			while (true) {
 
-				if (next.getKey() == p.getKey()) return false;
+				if (next.getKey() == p.getKey()) {
+					if (next.deleted == 1) {
+						//next.deleted = 0;
+						pageBuffor[(currentAddress - 1) % BLOCKING_FACTOR] = p;
+						saveOverflowPage(currentAddress);
+						break;
+					}
+					else {
+						printLog();
+						return false;
+					}
+				}
 
 				if (next.overflowAddr() == 0) {
 					pageBuffor[(currentAddress - 1) % BLOCKING_FACTOR].setOverflowAddr(++overflowLastAddress);
@@ -220,7 +279,10 @@ bool Disk::addToOverflow(Polynomial p, int mainAreaAddress) {
 	}
 
 	overflowKeys++;
-	if ((overflowLastAddress) / BLOCKING_FACTOR > overflowPages - 1) reorganize();
+	printLog();
+	if ((overflowLastAddress) / BLOCKING_FACTOR > overflowPages - 1) {
+		reorganize();
+	}
 	return true;
 	//pageBuffor[i].setOverflowAddr = overflowLastAddress++;
 }
@@ -231,28 +293,38 @@ Polynomial Disk::read(int key)
 	int recordsOnPage = this->readPage(address);
 	//mainArea.seekg(writePosition);
 
-	if (key < 1) return Polynomial();
-
+	if (key < 1) {
+		printLog(); 
+		return Polynomial();
+	}
 	for (int i = 0; i < recordsOnPage; i++) {
-		if (pageBuffor[i].getKey() == key && pageBuffor[i].deleted != deleted) return pageBuffor[i];
+		if (pageBuffor[i].getKey() == key && pageBuffor[i].deleted != deleted) {
+			printLog();
+			return pageBuffor[i];
+		}
 		else if (pageBuffor[i].getKey() > key && i>0) {
 			Polynomial next = pageBuffor[i-1];
 			while (next.overflowAddr() != 0) {
 				readOverflowPage(next.overflowAddr());
 				next = pageBuffor[(next.overflowAddr() - 1) % BLOCKING_FACTOR];
-				if (next.getKey() == key && !pageBuffor[i].deleted) return next;
+				if (next.getKey() == key && !next.deleted) {
+					printLog();
+					return next;
+				}
 			}
 		}
 	}
+	printLog();
 	return Polynomial();
 }
 
 Polynomial Disk::readNext()
 {
 
-	if (lastRecord.page > mainAreaPages) {
+	if (lastRecord.page > mainAreaPages || mainKeys < 1) {
 		lastRecord.record = Polynomial();
 		lastRecord.record.setKey(-1);
+		printLog();
 		return lastRecord.record;
 	}
 	if (lastRecord.position == -1 && lastRecord.page == 1) {
@@ -267,9 +339,13 @@ Polynomial Disk::readNext()
 			lastRecord.record = pageBuffor[1];
 			lastRecord.position = 1;
 			lastRecord.page = 1;
+			printLog();
 			return lastRecord.record;
 		}
-		if (lastRecord.record.deleted) return readNext();
+		if (lastRecord.record.deleted) {
+			return readNext();
+		}
+		printLog();
 		return lastRecord.record;
 	}
 
@@ -277,7 +353,10 @@ Polynomial Disk::readNext()
 		readOverflowPage(lastRecord.record.overflowAddr());
 		lastRecord.record = pageBuffor[(lastRecord.record.overflowAddr() - 1) % BLOCKING_FACTOR];
 
-		if (lastRecord.record.deleted) return readNext();
+		if (lastRecord.record.deleted) {
+			return readNext();
+		}
+		printLog();
 		return lastRecord.record;
 	}
 
@@ -288,6 +367,7 @@ Polynomial Disk::readNext()
 				lastRecord.position = -1;
 				lastRecord.record = Polynomial();
 				lastRecord.record.setKey(-1);
+				printLog();
 				return lastRecord.record;//Polynomial();	/// nie ma dalej rekordow bo nie ma stron
 			}
 			readPage(currentPage + 1);	/// inaczej czytaj kolejna strone
@@ -308,13 +388,16 @@ Polynomial Disk::readNext()
 		lastRecord.position++;
 	}
 
-	if (lastRecord.record.deleted ) return readNext();
+	if (lastRecord.record.deleted) {
+		return readNext();
+	}
 	if (lastRecord.record.getKey() == 0) {
 		lastRecord.position = -1;
 		lastRecord.page ++;
 		lastRecord.record.setOverflowAddr(0);
 		return readNext();
 	}
+	printLog();
 	return lastRecord.record;
 }
 
@@ -339,7 +422,7 @@ int Disk::readPage(int address)
 			if (pageBuffor[i].getKey() != 0) r++;
 	}
 	else {
-		int physicalAddress = (address - 1) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
+		int64_t physicalAddress = (address - 1) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
 		mainArea.clear();
 		mainArea.seekg(physicalAddress);
 		memcpy(pageBuffor, zeros, sizeof(Polynomial)*BLOCKING_FACTOR);
@@ -364,6 +447,7 @@ int Disk::readPage(int address)
 	}
 	currentPage = address;
 	overflowPageInMemory = -1;
+	readed++;
 	return r;
 }
 
@@ -373,13 +457,13 @@ int Disk::readOverflowPage(int address)
 	int x, key=0, ov;
 	int a[5];
 	int r = 0;
-	if (overflowPageInMemory == address) {
+
+	int64_t physicalAddress = ((address - 1) / BLOCKING_FACTOR) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
+	if (overflowPageInMemory == physicalAddress) {
 		for (int i = 0; i < BLOCKING_FACTOR; i++)
 			if (pageBuffor[i].getKey() != 0) r++;
 	}
 	else {
-
-		int physicalAddress = ((address - 1) / BLOCKING_FACTOR) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
 		overflowArea.clear();
 		overflowArea.seekg(physicalAddress);
 		memcpy(pageBuffor, zeros, sizeof(Polynomial)*BLOCKING_FACTOR);
@@ -400,15 +484,17 @@ int Disk::readOverflowPage(int address)
 			pageBuffor[i].deleted = del;
 			if (key != 0) r++;
 		}
+		readed++;
 	}
 	currentPage = -1;
-	overflowPageInMemory = address;
+	overflowPageInMemory = ((address - 1) / BLOCKING_FACTOR) * PAGE_BYTES;
+
 	return r;
 }
 
 void Disk::savePage(int address)
 {
-	int physicalAddress = (address - 1) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
+	int64_t physicalAddress = (address - 1) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
 	mainArea.clear();
 	mainArea.seekp(physicalAddress);
 	int x, key, ov;
@@ -434,11 +520,12 @@ void Disk::savePage(int address)
 	std::flush(mainArea);
 	currentPage = address;
 	overflowPageInMemory = -1;
+	saved++;
 }
 
 void Disk::saveOverflowPage(int address)
 {
-	int physicalAddress = ((address-1)/BLOCKING_FACTOR) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
+	int64_t physicalAddress = ((address-1)/BLOCKING_FACTOR) * PAGE_BYTES;//zwrot_wyszukiwania_w_indexie*BLOCKING_FACTOR*Rozmiar_rekordu; //nr*strona
 
 	overflowArea.clear();
 	overflowArea.seekp(physicalAddress);
@@ -463,6 +550,7 @@ void Disk::saveOverflowPage(int address)
 	}
 	currentPage = -1;
 	overflowPageInMemory = address;
+	saved++;
 	std::flush(overflowArea);
 }
 
@@ -473,10 +561,11 @@ bool Disk::DeleteRecord(int key) {
 	int recordsOnPage = this->readPage(address);
 	int i = 0;
 	for (i = 0; i < recordsOnPage; i++) {
-		if (pageBuffor[i].getKey() == key) {
+		if (pageBuffor[i].getKey() == key && !pageBuffor[i].deleted) {
 			pageBuffor[i].deleted = deleted;
 			savePage(address);
 			mainKeys--;
+			printLog();
 			return true;
 		}
 		else if (pageBuffor[i].getKey() > key && i > 0) {
@@ -485,10 +574,11 @@ bool Disk::DeleteRecord(int key) {
 				int ovAddress = next.overflowAddr();
 				readOverflowPage(ovAddress);
 				next = pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR];
-				if (next.getKey() == key) {
+				if (next.getKey() == key && !next.deleted) {
 					pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR].deleted = deleted;
 					saveOverflowPage(ovAddress);
 					overflowKeys--;
+					printLog();
 					return true;
 				}
 			}
@@ -500,32 +590,38 @@ bool Disk::DeleteRecord(int key) {
 		int ovAddress = next.overflowAddr();
 		readOverflowPage(ovAddress);
 		next = pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR];
-		if (next.getKey() == key) {
+		if (next.getKey() == key && !next.deleted) {
 			pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR].deleted = deleted;
 			saveOverflowPage(ovAddress);
 			overflowKeys--;
+			printLog();
 			return true;
 		}
 	}
-
+	printLog();
 return false;
 }
 
 
 void Disk::reorganize()
 {
-	int newMainPages = ceil(1.0*(mainKeys + overflowKeys) / (BLOCKING_FACTOR*0.5));
+	bool logState = log;
+	log = false;
+	int tmpa = readed, tmpb = saved;
+	std::cout << "Reorganizacja !" << std::endl;
+	int newMainPages = ceil(1.0*(mainKeys + overflowKeys+1) / (BLOCKING_FACTOR*0.5));
+	if (newMainPages == 0) newMainPages = 1;
 	std::fstream newMain;
 	newMain.open("newMain.brt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
-
 	std::fstream newIndexFile;
-	int newIndexPages = ceil(1.0*newMainPages / BLOCIKNG_INDEX);
+	int newIndexPages = ceil(1.0*newMainPages / (1.0*BLOCIKNG_INDEX));
 	Index* newIndex = new Index[newMainPages];
+	
+	std::cout << "\t\t\t new index: " << newMainPages<<"\n";
 	//newIndexFile.open("newIndex.brt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
-
 	int newOverflowPages = ceil(0.20*newMainPages);
 
-	resetLastRecord();
+	resetNext();
 	Polynomial newBuffer[BLOCKING_FACTOR];
 	newBuffer[0].setKey(-1);
 	Polynomial p = this->readNext();
@@ -536,7 +632,7 @@ void Disk::reorganize()
 	int page = 1;
 	int recOnPage = 1; // guard rozpoczyna
 	while (p.getKey() != -1) {
-		if (recOnPage > 0.5*BLOCKING_FACTOR) {
+		if (recOnPage >= 0.5*BLOCKING_FACTOR) {
 			savePage(&newMain, page, newBuffer);
 			page++;
 			newIndex[page - 1].address = page;
@@ -560,26 +656,105 @@ void Disk::reorganize()
 	memcpy(pageBuffor, zeros, BLOCKING_FACTOR * sizeof(Polynomial));
 
 	mainArea.close();
+		
 	newMain.close();
 	std::remove("main.brt");
 	std::rename("newMain.brt", "main.brt");
-
 	overflowArea.close();
 	overflowArea.open("overflow.brt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
-	delete[] index;
+	delete index;
 	index = newIndex;
 	indexKeys = page;
+	//indexKeys = newMainPages;
 	indexPages = newIndexPages;
-	resetLastRecord();
+	resetNext();
 	saveIndexes();
+	saveConfig();
 	mainArea.open("main.brt", std::ios::binary | std::ios::in | std::ios::out);
-		std::cout << "Koniec reorganizacji";
+	log = logState;
+	//printLog();
+	readed = tmpa;
+	saved = tmpb;
 }
 
-void Disk::resetLastRecord() {
+bool Disk::update(Polynomial p)
+{
+	int key = p.getKey();
+
+	int address = this->getKeyPosition(key);
+	int recordsOnPage = this->readPage(address);
+	int i = 0;
+	for (i = 0; i < recordsOnPage; i++) {
+		if (pageBuffor[i].getKey() == key && !pageBuffor[i].deleted) {
+			p.setOverflowAddr(pageBuffor[i].overflowAddr());
+			pageBuffor[i] = p;
+			savePage(address);
+			printLog();
+			return true;
+		}
+		else if (pageBuffor[i].getKey() > key && i > 0) {
+			Polynomial next = pageBuffor[i - 1];
+			while (next.overflowAddr() != 0) {
+				int ovAddress = next.overflowAddr();
+				readOverflowPage(ovAddress);
+				next = pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR];
+				if (next.getKey() == key && !next.deleted) {
+					p.setOverflowAddr(next.overflowAddr());
+					pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR] = p;
+					saveOverflowPage(ovAddress);
+					printLog();
+					return true;
+				}
+			}
+		}
+	}
+	Polynomial next = pageBuffor[i - 1];
+	while (next.overflowAddr() != 0) {
+		int ovAddress = next.overflowAddr();
+		readOverflowPage(ovAddress);
+		next = pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR];
+		if (next.getKey() == key && !next.deleted) {
+			p.setOverflowAddr(next.overflowAddr());
+			pageBuffor[(ovAddress - 1) % BLOCKING_FACTOR] = p;
+			saveOverflowPage(ovAddress);
+			printLog();
+			return true;
+		}
+	}
+	printLog();
+	return false;
+}
+
+void Disk::resetNext() {
 	lastRecord.position = -1;
 	lastRecord.page = 1;
 	lastRecord.record = Polynomial();
+}
+
+bool Disk::setLog()
+{
+	saved = 0;
+	readed = 0;
+	log = !log;
+	return log;
+}
+
+void Disk::readAllRecords()
+{
+	Polynomial p;
+	this->resetNext();
+	bool tmp = log;
+	log = false;
+
+	p = this->readNext();
+
+	while (p.getKey() != -1) {
+		std::cout << p.getKey() << " " << p.getX() << " " << p.getCoefficient()[0] << " " << p.getCoefficient()[1] << " "
+			<< p.getCoefficient()[2] << p.getCoefficient()[3] << " " << p.getCoefficient()[4] << std::endl;
+		p = this->readNext();
+	}
+	log = tmp;
+	printLog();
 }
 
 void Disk::savePage(std::fstream *stream, int address, Polynomial* buffor)
@@ -607,18 +782,71 @@ void Disk::savePage(std::fstream *stream, int address, Polynomial* buffor)
 		stream->write((char*)&ov, 4);
 		stream->write((char*)&pageBuffor[i].deleted, 1);
 	}
+	currentPage = -1;
+	overflowPageInMemory = -1;
+	saved++;
 	std::flush(*stream);
 }
 
-Disk::~Disk()
-{
+
+void Disk::showFile() {
+	bool logstate = log;
+	log = false;
+	Polynomial p;
+	for (int i = 0; i < indexKeys; i++) {
+		readPage(i+1);
+		std::cout << "Index: " << index[i].address << " : " << index[i].key <<std::endl;
+		for (int j = 0; j < BLOCKING_FACTOR; j++) {
+			if (pageBuffor[j].getKey() == 0) {
+				std::cout << "---------" << std::endl;
+			}
+			else {
+				p = pageBuffor[j];
+				if (p.deleted) std::cout << "* ";
+				std::cout << p.getKey() << " " << p.getX() << " " << p.getCoefficient()[0] << " "
+						  << p.getCoefficient()[1] << " " << p.getCoefficient()[2] << " " << p.getCoefficient()[3]
+						  << " " << p.getCoefficient()[4] << " " << std::endl;
+			}
+		}
+	}
+	std::cout << "Overflow Area:" << std::endl;
+
+		for (int i = 0; i < overflowPages; i++) {
+			readOverflowPage((i+1)*BLOCKING_FACTOR);
+			for (int j = 0; j < BLOCKING_FACTOR; j++) {
+				if (pageBuffor[j].getKey() == 0) {
+					std::cout << "---------" << std::endl;
+				}
+				else {
+					p = pageBuffor[j];
+					if (p.deleted) std::cout << "* ";
+					std::cout << p.getKey() << " " << p.getX() << " " << p.getCoefficient()[0] << " "
+						<< p.getCoefficient()[1] << " " << p.getCoefficient()[2] << " " << p.getCoefficient()[3]
+						<< " " << p.getCoefficient()[4] << " " << std::endl;
+				}
+			}
+			std::cout << "----------------------" << std::endl;
+		}
+	log = logstate;
+	readed = 0;
+	saved = 0;
+}
+
+void Disk::saveConfig() {
 	std::fstream conf;
 	conf.open("conf.brt", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
 	conf.write((char*)&mainKeys, 4);//-1
 	conf.write((char*)&mainAreaPages, 4);
 	conf.write((char*)&overflowKeys, 4);
+	conf.write((char*)&overflowPages, 4);
 	conf.write((char*)&overflowLastAddress, 4);
 	conf.write((char*)&indexPages, 4);
 	conf.write((char*)&indexKeys, 4);
 	conf.close();
+}
+
+Disk::~Disk()
+{
+	saveConfig();
+	saveIndexes();
 }

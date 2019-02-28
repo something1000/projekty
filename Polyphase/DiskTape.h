@@ -3,26 +3,25 @@
 #include <fstream>
 #include <iostream>
 
-
 #define BLOCKING_FACTOR 64
 #define PAGE_SIZE 1536//in bytes
 
 class DiskTape
 {
 public:
-	DiskTape(const char* nazwa, int* odczyty, int* zapisy);
+	DiskTape(const char* nazwa, int* odczyty, int* zapisy, bool clear = false);
 	DiskTape();
 	~DiskTape();
 	void save(Polynomial p);
-	Polynomial read(int numberOfRecords, int* readed);
+	Polynomial read(bool* readed);
 	void forceSave();
-	void initDiskTape(const char* nazwa, int* odczyty, int* zapisy);
+	void initDiskTape(const char* nazwa, int* odczyty, int* zapisy, bool clear = false);
 	void removeContent();
 	void reopen();
 	void close();
+	void showSeries();
 private:
 	std::fstream disk;
-	int bfr;
 	Polynomial* saveBuffor = new Polynomial[BLOCKING_FACTOR];
 	void saveBuffored();
 	int saveBufforQty = 0;
